@@ -2,7 +2,8 @@ from __future__ import print_function
 import numpy as np
 import sys
 import tensorflow as tf
-from tensorflow.image import resize_images
+from tensorflow.image import resize
+# from tensorflow.image import resize_images
 # try:
 #     import special_grads
 # except KeyError as e:
@@ -315,7 +316,7 @@ class SAML:
         self.sum8 = concat2d(self.deconv8, self.deconv8)
         self.conv81 = conv_block(self.sum8, weights['conv81_weights'], weights['conv81_biases'], scope='conv8/bn1', is_training=is_training)
         self.conv82 = conv_block(self.conv81, weights['conv82_weights'], weights['conv82_biases'], scope='conv8/bn2', is_training=is_training)
-        self.conv82_resize = tf.image.resize_images(self.conv82, [384, 384], method=tf.image.ResizeMethod.BILINEAR, align_corners=False)
+        self.conv82_resize = tf.image.resize(self.conv82, [384, 384], method=tf.image.ResizeMethod.BILINEAR, align_corners=False)
         # 192x192x32
 
         self.deconv9 = deconv_block(self.conv82, weights['deconv9_weights'], weights['deconv9_biases'], scope='deconv/bn9', is_training=is_training)
