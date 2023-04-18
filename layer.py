@@ -1,7 +1,7 @@
-from tensorflow.contrib.layers.python import layers as tf_layers
+#from tensorflow.contrib.layers.python import layers as tf_layers
 from tensorflow.python.platform import flags
 import tensorflow as tf
-import tensorflow.contrib.slim as slim
+#import tensorflow.contrib.slim as slim
 
 def concat2d(x1,x2):
     """ concatenation without offset check"""
