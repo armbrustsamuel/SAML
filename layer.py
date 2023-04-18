@@ -68,11 +68,11 @@ def fc(x, wweight, bweight, activation=None):
     
     act = tf.nn.xw_plus_b(x, wweight, bweight)
 
-    if activation is 'relu':
+    if activation == 'relu':
         return tf.nn.relu(act)
-    elif activation is 'leaky_relu':
+    elif activation == 'leaky_relu':
         return tf.nn.leaky_relu(act)
-    elif activation is None:
+    elif activation == None:
         return act
     else:
         raise NotImplementedError
