@@ -4,12 +4,12 @@ import os
 import random
 import tensorflow as tf
 
-from tensorflow.contrib.layers.python import layers as tf_layers
+#from tensorflow.contrib.layers.python import layers as tf_layers
 from tensorflow.python.platform import flags
 import SimpleITK as sitk
 from scipy import ndimage
 import itertools
-from tensorflow.contrib import slim
+#from tensorflow.contrib import slim
 from scipy.ndimage import _ni_support
 from scipy.ndimage.morphology import distance_transform_edt, binary_erosion,\
     generate_binary_structure
