@@ -34,81 +34,81 @@ def train(model, saver, sess, train_file_list, test_file, args, resume_itr=0):
     best_test_dice = 0
     best_test_haus = 0
     for epoch in xrange(0, args.epoch):
-    	for itr in range(resume_itr, args.train_iterations):
-		start = time.time()
-		# Sampling training and test tasks
-		num_training_tasks = len(train_file_list)
-		num_meta_train = 2#num_training_tasks-1
-		num_meta_test = 1#num_training_tasks-num_meta_train  # as setting num_meta_test = 1
+        for itr in range(resume_itr, args.train_iterations):
+	    start = time.time()
+	    # Sampling training and test tasks
+	    num_training_tasks = len(train_file_list)
+	    num_meta_train = 2#num_training_tasks-1
+	    num_meta_test = 1#num_training_tasks-num_meta_train  # as setting num_meta_test = 1
 
-		# Randomly choosing meta train and meta test domains
-		task_list = np.random.permutation(num_training_tasks)
-		meta_train_index_list = task_list[:2]
-		meta_test_index_list = task_list[-1:]
+	    # Randomly choosing meta train and meta test domains
+	    task_list = np.random.permutation(num_training_tasks)
+	    meta_train_index_list = task_list[:2]
+	    meta_test_index_list = task_list[-1:]
 
-		# Sampling meta-train, meta-test data
-		for i in range(num_meta_train):
-		    task_ind = meta_train_index_list[i]
-		    if i == 0:
-			inputa, labela = sess.run(train_next_list[task_ind])
-		    elif i == 1:
-			inputa1, labela1 = sess.run(train_next_list[task_ind])
-		    else:
-			raise RuntimeError('check number of meta-train domains.')
+	    # Sampling meta-train, meta-test data
+	    for i in range(num_meta_train):
+	        task_ind = meta_train_index_list[i]
+	        if i == 0:
+	    	inputa, labela = sess.run(train_next_list[task_ind])
+	        elif i == 1:
+	    	inputa1, labela1 = sess.run(train_next_list[task_ind])
+	        else:
+	    	raise RuntimeError('check number of meta-train domains.')
 
-		for i in range(num_meta_test):
-		    task_ind = meta_test_index_list[i]
-		    if i == 0:
-			inputb, labelb = sess.run(train_next_list[task_ind])
-		    else:
-			raise RuntimeError('check number of meta-test domains.')
+	    for i in range(num_meta_test):
+	        task_ind = meta_test_index_list[i]
+	        if i == 0:
+	    	inputb, labelb = sess.run(train_next_list[task_ind])
+	        else:
+	    	raise RuntimeError('check number of meta-test domains.')
 
-		input_group = np.concatenate((inputa[:2],inputa1[:1],inputb[:2]), axis=0)
-		label_group = np.concatenate((labela[:2],labela1[:1],labelb[:2]), axis=0)
+	    input_group = np.concatenate((inputa[:2],inputa1[:1],inputb[:2]), axis=0)
+	    label_group = np.concatenate((labela[:2],labela1[:1],labelb[:2]), axis=0)
 
-		contour_group, metric_label_group = _get_coutour_sample(label_group)
+	    contour_group, metric_label_group = _get_coutour_sample(label_group)
 
-		feed_dict = {model.inputa: inputa, model.labela: labela, \
-			     model.inputa1: inputa1, model.labela1: labela1, \
-			     model.inputb: inputb, model.labelb: labelb, \
-			     model.input_group:input_group, \
-			     model.label_group:label_group, \
-			     model.contour_group:contour_group, \
-			     model.metric_label_group:metric_label_group, \
-			     model.KEEP_PROB: 1.0}
+	    feed_dict = {model.inputa: inputa, model.labela: labela, \
+	        model.inputa1: inputa1, model.labela1: labela1, \
+	        model.inputb: inputb, model.labelb: labelb, \
+	        model.input_group:input_group, \
+	        model.label_group:label_group, \
+	        model.contour_group:contour_group, \
+	        model.metric_label_group:metric_label_group, \
+	        model.KEEP_PROB: 1.0}
 
-		output_tensors = [model.task_train_op, model.meta_train_op, model.metric_train_op]
-		output_tensors.extend([model.summ_op, model.seg_loss_b, model.compactness_loss_b, model.smoothness_loss_b, model.target_loss, model.source_loss])
-		_, _, _, summ_writer, seg_loss_b, compactness_loss_b, smoothness_loss_b, target_loss, source_loss = sess.run(output_tensors, feed_dict)
-		# output_tensors = [model.task_train_op]
-		# output_tensors.extend([model.source_loss])
-		# _, source_loss = sess.run(output_tensors, feed_dict)
+	    output_tensors = [model.task_train_op, model.meta_train_op, model.metric_train_op]
+	    output_tensors.extend([model.summ_op, model.seg_loss_b, model.compactness_loss_b, model.smoothness_loss_b, model.target_loss, model.source_loss])
+	    _, _, _, summ_writer, seg_loss_b, compactness_loss_b, smoothness_loss_b, target_loss, source_loss = sess.run(output_tensors, feed_dict)
+	    # output_tensors = [model.task_train_op]
+	    # output_tensors.extend([model.source_loss])
+	    # _, source_loss = sess.run(output_tensors, feed_dict)
 
-		if itr % args.print_interval == 0:
-		    logging.info("Epoch: [%2d] [%6d/%6d] time: %4.4f inner lr:%.8f outer lr:%.8f" % (epoch, itr, args.train_iterations, (time.time()-start), model.inner_lr.eval(), model.outer_lr.eval()))
-		    logging.info('sou_loss: %.7f, tar_loss: %.7f, tar_seg_loss: %.7f, tar_compactness_loss: %.7f, tar_smoothness_loss: %.7f' % (source_loss, target_loss, seg_loss_b, compactness_loss_b, smoothness_loss_b))
+	    if itr % args.print_interval == 0:
+	        logging.info("Epoch: [%2d] [%6d/%6d] time: %4.4f inner lr:%.8f outer lr:%.8f" % (epoch, itr, args.train_iterations, (time.time()-start), model.inner_lr.eval(), model.outer_lr.eval()))
+	        logging.info('sou_loss: %.7f, tar_loss: %.7f, tar_seg_loss: %.7f, tar_compactness_loss: %.7f, tar_smoothness_loss: %.7f' % (source_loss, target_loss, seg_loss_b, compactness_loss_b, smoothness_loss_b))
 
-		if itr % args.summary_interval == 0:
-		    train_writer.add_summary(summ_writer, itr)
-		    train_writer.flush()
+	    if itr % args.summary_interval == 0:
+	        train_writer.add_summary(summ_writer, itr)
+	        train_writer.flush()
 
-		if (itr!=0) and itr % args.save_freq == 0:
-		    saver.save(sess, args.checkpoint_dir + '/epoch_' + str(epoch) + '_itr_'+str(itr) + ".model.cpkt")
+	    if (itr!=0) and itr % args.save_freq == 0:
+	        saver.save(sess, args.checkpoint_dir + '/epoch_' + str(epoch) + '_itr_'+str(itr) + ".model.cpkt")
 
-		# Testing periodically
-		if (itr!=0) and itr % args.test_freq == 0:
-		    test_dice, test_dice_arr, test_haus, test_haus_arr = test(sess, test_file, model, args)
+	    # Testing periodically
+	    if (itr!=0) and itr % args.test_freq == 0:
+	        test_dice, test_dice_arr, test_haus, test_haus_arr = test(sess, test_file, model, args)
 
-		    if test_dice > best_test_dice:
-			best_test_dice = test_dice
+	        if test_dice > best_test_dice:
+	    	best_test_dice = test_dice
 
-		    with open((os.path.join(args.log_dir,'eva.txt')), 'a') as f:
-			print >> f, 'Iteration %d :' % (itr)
-			print >> f, '	Unseen domain testing results: Dice: %f' %(test_dice), test_dice_arr
-			print >> f, '	Current best accuracy %f' %(best_test_dice)
-			print >> f, '	Unseen domain testing results: Haus: %f' %(test_haus), test_haus_arr
-			print >> f, '	Current best accuracy %f' %(best_test_haus)
-		    # Save model
+	        with open((os.path.join(args.log_dir,'eva.txt')), 'a') as f:
+	    	print >> f, 'Iteration %d :' % (itr)
+	    	print >> f, '	Unseen domain testing results: Dice: %f' %(test_dice), test_dice_arr
+	    	print >> f, '	Current best accuracy %f' %(best_test_dice)
+	    	print >> f, '	Unseen domain testing results: Haus: %f' %(test_haus), test_haus_arr
+	    	print >> f, '	Current best accuracy %f' %(best_test_haus)
+	        # Save model
 
 def test(sess, test_list, model, args):
     
