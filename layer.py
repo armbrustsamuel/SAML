@@ -15,7 +15,7 @@ def concat2d(x1,x2):
         raise ValueError("Cannot concatenate tensors with different shape, igonoring feature map depth")
     return tf.concat([x1, x2], 3)
 
-def normalize(inp, activation, reuse=tf.AUTO_REUSE, scope='', form='batch_norm', is_training=True):
+def normalize(inp, activation, scope='', form='batch_norm', is_training=True):
     if form == 'batch_norm':
         return tf_layers.batch_norm(inp, activation_fn=activation, reuse=reuse, scope=scope, is_training=is_training)
     elif form == 'layer_norm':
