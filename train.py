@@ -144,7 +144,7 @@ def test(sess, test_list, model, args):
         dice_subject = _eval_dice(mask, processed_pred_y)
 
         # print spacing
-        dice.append(dice_subject)
+        dice.append(dice_subject) 
         # haus.append(haus_subject)
         # _save_nii_prediction(mask, processed_pred_y, pred_y, args.result_dir, '_' + filename[-26:-20])
     dice_avg = np.mean(dice, axis=0).tolist()[0]
