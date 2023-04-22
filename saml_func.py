@@ -204,7 +204,8 @@ class SAML:
     def construct_unet_weights(self):
 
         weights = {}
-        conv_initializer = tf.contrib.layers.xavier_initializer_conv2d(dtype=tf.float32)
+        # conv_initializer = tf.contrib.layers.xavier_initializer_conv2d(dtype=tf.float32)
+        conv_initializer = tf.truncated_normal_initializer(stddev=0.1)
 
         with tf.variable_scope('conv1') as scope:
             weights['conv11_weights'] = tf.get_variable('weights', shape=[5, 5, 3, 16], initializer=conv_initializer)
