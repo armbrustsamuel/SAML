@@ -1,13 +1,15 @@
 from __future__ import print_function
 import numpy as np
 import sys
-import tensorflow as tf
+# import tensorflow as tf
 from tensorflow.image import resize
 # from tensorflow.image import resize_images
 # try:
 #     import special_grads
 # except KeyError as e:
 #     print('WARN: Cannot define MaxPoolGrad, likely already defined for this version of tensorflow: %s' % e, file=sys.stderr)
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from tensorflow.python.platform import flags
 from layer import conv_block, deconv_block, fc, max_pool, concat2d
