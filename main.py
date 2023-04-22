@@ -13,7 +13,7 @@ from utils import check_folder, show_all_variables
 import logging
 
 currtime = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-tf.set_random_seed(2)
+tf.random.set_seed(2)
 
 def parse_args(train_date):
     desc = "Tensorflow implementation of DenseUNet for prostate segmentation"
